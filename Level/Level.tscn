@@ -1,0 +1,153 @@
+[gd_scene load_steps=14 format=2]
+
+[ext_resource path="res://Player/Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Opponent/Opponent.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Ball/Ball.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Level/Level.gd" type="Script" id=4]
+[ext_resource path="res://Assets/bit5x3.ttf" type="DynamicFontData" id=5]
+[ext_resource path="res://Assets/ping_pong_8bit_plop.ogg" type="AudioStream" id=6]
+[ext_resource path="res://UI/Pause_Menu.tscn" type="PackedScene" id=7]
+
+[sub_resource type="DynamicFont" id=3]
+size = 32
+use_mipmaps = true
+font_data = ExtResource( 5 )
+
+[sub_resource type="DynamicFont" id=4]
+size = 32
+use_mipmaps = true
+font_data = ExtResource( 5 )
+
+[sub_resource type="DynamicFont" id=5]
+size = 32
+use_mipmaps = true
+font_data = ExtResource( 5 )
+
+[sub_resource type="DynamicFont" id=6]
+size = 64
+font_data = ExtResource( 5 )
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 640, 50 )
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 50, 360 )
+
+[node name="Level" type="Node"]
+script = ExtResource( 4 )
+
+[node name="BG" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0, 0, 0, 1 )
+
+[node name="Center_Div" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -638.0
+margin_top = 6.0
+margin_right = 642.0
+margin_bottom = 726.0
+custom_fonts/font = SubResource( 3 )
+text = "|"
+align = 1
+
+[node name="Score_Player" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -308.0
+margin_top = 6.0
+margin_right = -8.0
+margin_bottom = 30.0
+custom_fonts/font = SubResource( 4 )
+text = "Player_Score"
+align = 2
+valign = 1
+
+[node name="Score_AI" type="Label" parent="."]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = 12.0
+margin_top = 6.0
+margin_right = 312.0
+margin_bottom = 30.0
+custom_fonts/font = SubResource( 5 )
+text = "AI_Score"
+valign = 1
+
+[node name="Countdown_Label" type="Label" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 4.0
+margin_right = 4.0
+custom_fonts/font = SubResource( 6 )
+text = "Count"
+align = 1
+valign = 1
+
+[node name="StaticBody_Top" type="StaticBody2D" parent="."]
+position = Vector2( -2, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody_Top"]
+position = Vector2( 640, -50 )
+shape = SubResource( 1 )
+
+[node name="StaticBody_Bottom" type="StaticBody2D" parent="."]
+position = Vector2( 0, 820 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody_Bottom"]
+position = Vector2( 640, -50 )
+shape = SubResource( 1 )
+
+[node name="Paddle_Player" parent="." instance=ExtResource( 1 )]
+position = Vector2( 30, 360 )
+
+[node name="Paddle_AI" parent="." instance=ExtResource( 2 )]
+position = Vector2( 1250, 360 )
+
+[node name="Ball" parent="." instance=ExtResource( 3 )]
+visible = false
+position = Vector2( 640, 360 )
+
+[node name="AI_Win_Pos" type="Area2D" parent="."]
+position = Vector2( -1, -1 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AI_Win_Pos"]
+position = Vector2( -50, 360 )
+shape = SubResource( 2 )
+
+[node name="Player_Win_Pos2" type="Area2D" parent="."]
+position = Vector2( 1381, 0 )
+__meta__ = {
+"_edit_group_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player_Win_Pos2"]
+position = Vector2( -50, 360 )
+shape = SubResource( 2 )
+
+[node name="Countdown_Timer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+
+[node name="Score_Sound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 6 )
+volume_db = -20.0
+pitch_scale = 0.8
+
+[node name="Pause_Menu" parent="." instance=ExtResource( 7 )]
+visible = false
+
+[connection signal="body_entered" from="AI_Win_Pos" to="." method="_on_AI_Win_Pos_body_entered"]
+[connection signal="body_entered" from="Player_Win_Pos2" to="." method="_on_Player_Win_Pos2_body_entered"]
+[connection signal="timeout" from="Countdown_Timer" to="." method="_on_Countdown_Timer_timeout"]
